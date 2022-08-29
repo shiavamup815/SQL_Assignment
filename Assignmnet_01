@@ -1,0 +1,51 @@
+-- Creating Table Customers
+
+create table Customers(
+Customerid char(5) not null,
+CompanyName varchar(40) not null,
+ContactName char(30) null,
+Address varchar(60) null,
+City char(15) null,
+Phone char(24) null,
+Fax char(24) null
+);
+Select * from Customers;
+
+-- Creating Table Orders
+
+create table Orders(
+OrderId integer not null,
+CustomerId char(5) not null,
+Orderdate datetime null,
+Freight money null,
+Shipname varchar(40) null,
+Shipaddress varchar(60) null,
+Quantity integer null
+);
+
+Select * from Orders;
+Select * from Customers, Orders;
+
+-- Add a new column in Orders
+alter table Orders add Shipregion integer null 
+
+-- Change data type of the column Shipregion
+alter table Orders alter column Shipregion char(8) null
+
+-- Delete the Column Shipregion
+alter table Orders drop column Shipregion
+
+-- Insert value in Order table
+insert into Orders values(
+10,'ord01',getdate(),getdate(),100.0,'Windstar','Ocean',1
+)
+
+-- Add current system date and time as default value in Orderdate in Order column
+alter table Orders add constraint Orderdate default (getdate()) for Orderdate;
+
+-- Rename city column of customer table to new name Town
+exec sp_rename 'Customers.City','Town','Column';
+
+
+
+
