@@ -1,3 +1,5 @@
+--------------------------------------------------1.Que Solution--------------------------------------------------------------------------------------------------------
+
 -- Creating Table Customers
 
 create table Customers(
@@ -48,4 +50,107 @@ exec sp_rename 'Customers.City','Town','Column';
 
 
 
+------------------------------------------------------------------2.Que Solution--------------------------------------------------------------------------------------
 
+create database Company
+use company
+
+-- Create Department table
+create table Department(
+Dept_no varchar(3),
+Dept_name varchar(15),
+location varchar(15)
+);
+insert into Department values('d1','Research','Dallas');
+insert into Department values('d2','Accounting','Seattle');
+insert into Department values('d3','Marketing','Dallas');
+select * from Department;
+
+-- Create Employee Table
+create table Employee(
+Emp_no int,
+Emp_fname varchar(8),
+Emp_lname varchar(10),
+Dept_no varchar(2)
+);
+insert into Employee values(25348,'Matthew','Smith','d3');
+insert into Employee values(10102,'Ann','Jones','d3');
+insert into employee values(18316,'John','Barrimore','d1');
+insert into employee values(29346,'James','James','d2');
+
+select * from Employee;
+
+--Create Project Table
+create table Project(
+Project_no varchar(2),
+Project_name varchar(10),
+Budget int
+);
+insert into Project values('p1','Apollo',120000);
+insert into Project values('p2','Gemini',95000);
+insert into Project values('p3','Mercury',185600);
+
+select * from Project;
+
+-- Create Work_On Table
+create table works_on(
+Emp_no int,
+Project_no varchar(2),
+Job varchar(10),
+Enter_date varchar(10)
+);
+insert into works_on values(10105,'p1','Analyst','1997.10.1');
+insert into works_on values(10102,'p3','Manager','1991-1-1');
+insert into works_on values(25348,'p2','Clerk','1998-2-15');
+insert into works_on values(18316,'p2',NULL,'1998-6-1');
+insert into works_on values(29346,'p2',NULL,'1997-12-15');
+insert into works_on values(2581,'p3','Analyst','1998-10-15');
+insert into works_on values(9031,'p1','Manager','1998-4-15');
+insert into works_on values(28559,'p2','Clerk','1999-2-1');
+insert into works_on values(9031,'p3','Clerk','1997-11-15');
+insert into works_on values(29346,'p1','Clerk','1998-1-4');
+
+select * from works_on;
+--1. Get all row of the works_on table.
+select * from works_on;
+
+--2. Get the employee numbers for all clerks.
+select Emp_no,Job from works_on where Job='Clerk';
+
+--3. Get the employee numbers for employees working in project p2, and having employee numbers smaller than 10000.
+select Emp_no from works_on where Project_no='p2' and Emp_no<10000;
+
+--4. Get the employee numbers for all employees who didn’t enter their project in 1998.
+select Emp_no, Enter_date from works_on where Enter_date not like '1998%'
+
+--5. Get the employee numbers for all employees who have a leading job( i.e., Analyst or Manager) in project p1
+select Emp_no, Project_no, Job from works_on where Project_no ='p1' and Job in('Analyst','Manager');
+
+--6. Get the enter dates for all employess in project p2 whose jobs have not been determined yet.
+select * from works_on where Project_no ='p2' and Job is NULL;
+
+--7. Get the employee numbers and last names of all employees whose first names contain two letter t’s.
+select Emp_no, Emp_fname, Emp_lname from Employee where Emp_fname like'%t%t%';
+
+--8. Get the employee numbers and first names of all employees whose last names have a letter o or a as the second character and end with the letters es.
+SELECT emp_no, emp_fname, emp_lname FROM employee WHERE emp_lname LIKE'_o%es' OR'_a%es';
+
+--9. Get the employee numbers of all employees whose departments are located in Seattle.
+SELECT emp_no, location FROM Department WHERE location ='Seattle';
+
+--10. Find the last and first names of all employess who entered their projects on 04.01.1998
+SELECT emp_no, enter_date FROM works_on WHERE enter_date LIKE '1998-01-04%';
+
+--11. Group all departments using their locations.
+SELECT location FROM department GROUP BY location;
+
+--12. Find the biggest employee number.
+SELECT MAX(emp_no) FROM works_on;
+
+--13. Get the jobs that are done by more than two employees.
+SELECT job FROM works_on WHERE job IS NOT NULL GROUP BY job HAVING COUNT(*)> 2;
+
+--14. Find the employee numbers of all employees who are clerks or work for department d3.
+SELECT works_on.emp_no, works_on.job  FROM works_on WHERE job ='Clerk' OR dept_no ='d3';
+
+----------------------------------------------------------------------------END------------------------------------------------------------------------------------
