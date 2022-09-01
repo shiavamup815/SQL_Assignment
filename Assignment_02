@@ -1,0 +1,99 @@
+--1. Create : Equi Join of project & Work_on
+select * from Project, works_on where project.Project_no = works_on.Project_no;
+
+--Create: Natural Join of project & Work_on
+select * from Project, works_on where project.Project_no = works_on.Project_no;
+
+--Create: Cartesian product of project & Work_on
+select * from Project, works_on;
+
+--2. Get the employee numbers and job titles of all employees working on project Gemini
+SELECT works_on.emp_no,works_on.job,project.project_name 
+FROM works_on LEFT JOIN project ON works_on.project_no = project.project_no 
+WHERE project_name ='Gemini';
+
+--3. Get the first and last names of all employees that work for departments Research or Acounting.
+SELECT employee.emp_fname, employee.emp_lname, department.dept_name
+FROM employee LEFT JOIN department ON employee.dept_no = department.dept_no 
+WHERE department.dept_name IN('Research','Accounting');
+
+--4. Get the enter dates of all clerks that belong to the department d1.
+SELECT works_on.emp_no,works_on.enter_date 
+FROM works_on LEFT JOIN employee ON works_on.emp_no=employee.emp_no 
+WHERE employee.dept_no='d1' AND works_on.job ='Clerk';
+
+--5. Get the names of projects on which two or more clerks are working.
+SELECT project.project_name 
+FROM project LEFT JOIN works_on ON project.project_no=works_on.project_no 
+GROUP BY project.project_name HAVING COUNT(*)>=2;
+
+--6. Get the first and last names of the employees that are manager and that work on project Mercury.
+CREATE TABLE employee_enh(emp_no int,
+			emp_fname VARCHAR(10),
+			emp_lname VARCHAR(10),
+			dept_no VARCHAR(2),
+			domicile VARCHAR(15)	
+				);
+INSERT INTO employee_enh VALUES(25348,'Matthew','Smith','d3','San Antonio');
+INSERT INTO employee_enh VALUES(10102,'Ann','Jones','d3','Houston');
+INSERT INTO employee_enh VALUES(18316,'John','Barrimore','d1','San Antonio');
+INSERT INTO employee_enh VALUES(29346,'James','James','d2','Seattle');
+
+select * from employee_enh;
+
+select employee_enh.emp_fname,employee_enh.emp_lname,works_on.job,project.project_name 
+FROM employee_enh LEFT JOIN works_on ON employee_enh.emp_no=works_on.emp_no LEFT JOIN project ON works_on.project_no=project .project_no 
+WHERE works_on.job ='Manager' AND project.project_name ='Mercury';
+
+--7. Get the first and last names of all employee who entered the project at the same time as at least one other employee.
+SELECT employee_enh.emp_fname, employee_enh.emp_lname, works_on.enter_date 
+FROM employee_enh LEFT JOIN works_on ON employee_enh.emp_no = works_on.emp_no 
+GROUP BY works_on.enter_date HAVING COUNT(*)> 1;
+
+--8. Get the employee numbers of the employees living in the same location and belonging to the same department as one another.
+SELECT emp_no, emp_fname, emp_lname, dept_no, domicile
+FROM employee_enh WHERE CONCAT(dept_no,'(', domicile,')') IN(SELECT CONCAT(dept_no,'(', domicile,')') AS address
+FROM employee_enh 
+GROUP BY address HAVING COUNT(*)> 1); 
+
+--9. Get the employee numbers of all employees belonging to the Marketing department.
+
+--Find two equivalent solutions using:
+
+--a. the JOIN operator
+SELECT employee.emp_no, department.dept_name 
+FROM employee LEFT JOIN department ON employee.dept_no = department.dept_no 
+WHERE department.dept_name ='Marketing';
+
+--b. The correlated subquery.
+
+--Modifying a Table’s Contents
+
+--1. Insert the data of a new employee called Julia Long, whose employee number is 1111. Her department number is not known yet.
+INSERT INTO works_on(emp_no,enter_date) VALUES(11111,'2019-3-29');
+INSERT INTO employee(emp_no,emp_fname,emp_lname) VALUES(11111,'Julia','Long');
+INSERT INTO employee_enh(emp_no,emp_fname,emp_lname,domicile) VALUES (1111,'Julia','Long','Xian');
+
+select * from works_on;
+select * from employee;
+select * from employee_enh;
+
+--2. Create a new table called emp_d1_d2 with all employees who work for department d1 or d1, and load the corresponding rows from the employee table.
+CREATE TABLE emp_d1_d2 as select * FROM employee WHERE dept_no IN('d1','d2');
+
+--3. Modify the job of all the employees in project p1 who are managers. They have to work as clerks from now on.
+UPDATE works_on SET job='Clerk' WHERE project_no='p1' AND job='Manager';
+
+--4. The budgets of all projects are no longer determined. Assign all budgets the NULL value.
+UPDATE project SET budget=NULL;
+
+--5. Increase the budget of the project where the manager has the employee number 10102. The increase is 10%.
+UPDATE project SET budget=(budget * 1.1) 
+WHERE project_no=(SELECT project_no FROM works_on WHERE job='Manager' AND emp_no=10102);
+
+--6. Change the enter date for the projects for those employees who work in project p1 and belong to the department Sales. The new date is 12.12.1998.
+UPDATE works_on SET enter_date = '1998-12-12 00:00:00' 
+WHERE emp_no IN(SELECT a.emp_no FROM(SELECT works_on.emp_no FROM works_on) 
+AS a LEFT JOIN employee ON a.emp_no=employee.emp_no LEFT JOIN department ON employee.dept_no=department.dept_no) AND project_no='p1';
+
+select * from works_on;
