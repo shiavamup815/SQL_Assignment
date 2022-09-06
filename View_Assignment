@@ -1,0 +1,45 @@
+--1. Create a view that comprises the data of all employees that work for the department d1.
+create view viewD1 as select * from employee_enh where dept_no='d1';
+select * from viewD1;
+
+--2. For the project table, create a view that can be used by employees who are allowed to view all data of this table except the budget column.
+create view view1 as select Project_no, Project_name from Project;
+select * from view1;
+
+--3. Create a view that comprises the first and last names of all employees who entered heir projects in the second half of the year 1988.
+CREATE VIEW view2 AS SELECT works_on.emp_no, works_on.project_no,employee.emp_fname 
+AS'First name',employee.emp_lname AS'Last name', works_on.enter_date 
+FROM works_on, employee 
+WHERE works_on.emp_no = employee.emp_no AND works_on.enter_date >= '1998-07-01';
+
+select * from view2;
+
+--4. Solve the previous exercise so that the original columns f_name and l_name have new names in the view: first and last, respectively.
+ALTER TABLE department CHANGE dept_name NAME VARCHAR(20);
+ALTER TABLE department CHANGE NAME dept_name VARCHAR(20);
+DROP VIEW viewD1;
+CREATE VIEW viewD1 AS SELECT emp_no,employee_enh.emp_fname 
+AS FIRST,employee_enh.emp_lname 
+AS LAST,dept_no,domicile 
+FROM employee_enh WHERE dept_no ='d1';
+SELECT * FROM viewd1;
+
+--5. Use the view in Exercise 3 to display full details of all employees whose last names begin with the letter M.
+CREATE VIEW view_fname_m 
+AS SELECT works_on.emp_no AS'employee number', employee_enh.emp_fname, employee_enh.emp_lname 
+AS'surname', works_on.job AS'position', project.project_name 
+AS'project', project.budget'project budget', works_on.enter_date'Join Date', department.dept_name 
+AS'Department', employee_enh.domicile AS'Residence' 
+FROM works_on, employee_enh, project, department 
+WHERE department.dept_no = employee_enh.dept_no AND employee_enh.emp_no = works_on.emp_no AND works_on .project_no = project.project_no;
+SELECT * FROM view_fname_m;
+SELECT * FROM view_fname_m WHERE emp_fname LIKE'm%';
+
+--6. Create a view which comprises full details of all projects on which the employee named smith works .
+CREATE VIEW view6 AS SELECT works_on.emp_no AS'Employee Number', employee_enh.emp_fname 
+AS'First Name', employee_enh.emp_lname AS'Last Name', works_on.job AS'Job', project.project_name 
+AS'Project', project.budget ' Project budget', works_on.enter_date'join date', department.dept_name 
+AS'department', employee_enh.domicile AS'residence' 
+FROM works_on, employee_enh, project, department 
+WHERE department.dept_no = employee_enh.dept_no AND employee_enh.emp_no = works_on .emp_no AND works_on.project_no = project.project_no AND employee_enh.emp_lname ='Smith';
+SELECT * FROM view6;
